@@ -1,0 +1,36 @@
+<!doctype html>
+
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Physics Collision Animation</title>
+  <script src="index.js" defer></script>
+  <style>
+    #animationCanvas {
+        background-color: peachpuff; 
+        border: 2px solid black;
+    }
+  </style>
+</head>
+
+<body>
+    <canvas tabindex="1" id="animationCanvas" width="800" height="200"> </canvas>
+    <br/>
+    <ul>
+        <li>
+            Ball 1
+            <input type="text" id="mass1" placeholder="Mass (grams)">
+            <input type="text" id="velocity1" placeholder="Velocity (m/s)">
+            <input type="text" id="velocityAfter1" placeholder="Velocity after (m/s)">
+        </li>
+        <li>
+            Ball 2
+            <input type="text" id="mass2" placeholder="Mass (grams)">
+            <input type="text" id="velocity2" placeholder="Velocity (m/s)">
+            <input type="text" id="velocityAfter2" placeholder="Velocity after (m/s)">
+        </li>
+    </ul>
+    <input type="button" id="start" value="Start Animation">
+</body>
+</html>
