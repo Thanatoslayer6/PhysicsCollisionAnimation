@@ -44,21 +44,27 @@ let ball1, ball2;
 let isRunning = false;
 
 const solveCollision = (mass1, mass2, v1, v2, u1, u2) => {
-    if (mass1 == undefined) {
+    // Formula: mass1 * mass2 *  
+    if (isNaN(mass1)) {
+        let equation = `x * ${v1} + (${mass2})(${v2}) = x * ${u1} + (${mass2})(${u2})`;
+        let sol = nerdamer.solveEquations(`x * ${v1} + (${mass2})(${v2}) = x * ${u1} + (${mass2})(${u2})`, 'x');
+        alert("Mass 1: " + sol.toString())
+        return parseFloat(sol.toString())
+    } else if (isNaN(mass2)) {
+        let sol = nerdamer.solveEquations(`x * ${v1} + (${mass2})(${v2}) = x * ${u1} + (${mass2})(${u2})`, 'x');
+        alert("Mass 2: " + sol.toString())
+        return parseFloat(sol.toString())
+    }
 
-    } else if (mass2 == undefined) {
+    if (isNaN(v1)) {
+
+    } else if (isNaN(v2)) {
 
     }
 
-    if (v1 == undefined) {
+    if (isNaN(u1)) {
 
-    } else if (v2 == undefined) {
-
-    }
-
-    if (u1 == undefined) {
-
-    } else if (u2 == undefined) {
+    } else if (isNaN(u2)) {
 
     }
 }
@@ -94,9 +100,10 @@ StartButton.addEventListener("click", () => {
     // First reset everything
     ctx.clearRect(0, 0, 800, 400);
     if (!isRunning) {
-        ball1 = new Ball(parseFloat(mass1.value), parseFloat(velocity1.value), parseFloat(velocityAfter1.value), 100)
-        ball2 = new Ball(parseFloat(mass2.value), parseFloat(velocity2.value), parseFloat(velocityAfter2.value), 700)
-        // solveCollision(parseFloat(mass1.value), parseFloat(mass2.value), parseFloat(velocity1.value))
+        // ball1 = new Ball(parseFloat(mass1.value), parseFloat(velocity1.value), parseFloat(velocityAfter1.value), 100)
+        // ball2 = new Ball(parseFloat(mass2.value), parseFloat(velocity2.value), parseFloat(velocityAfter2.value), 700)
+        // TODO: Solve collision first, then return the value then create the ball
+        let missingTerm = solveCollision(parseFloat(mass1.value), parseFloat(mass2.value), parseFloat(velocity1.value), parseFloat(velocity2.value), parseFloat(velocityAfter1.value), parseFloat(velocityAfter2.value))
         requestAnimationFrame(mainLoop)
         isRunning = true;
     } else {
