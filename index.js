@@ -11,7 +11,6 @@ const velocityAfter2 = document.getElementById('velocityAfter2')
 let ball1, ball2;
 let isRunning = false;
 
-
 class Ball {
     constructor(mass, velocity, velocityAfter, positionX) {
         this.mass = mass;
@@ -20,21 +19,59 @@ class Ball {
         this.positionX = positionX;
         this.positionY = (canvas.height / 2);
         this.size = mass * 1.667;
+        this.velocityVariableName = "";
+        this.name = ""
+    }
+    
+    drawLabel() {
+        // Draw name of ball
+        ctx.font = '12pt Calibri';
+        ctx.textAlign = 'center';
+        ctx.fillStyle = 'black';
+        ctx.fillText(this.name, this.positionX, this.positionY - (this.size + 15))
+        // Draw label inside ball mass (grams)
+        ctx.fillText(`${this.mass}g`, this.positionX, this.positionY)
+        // Draw velocity variable (v1, v2, u1, or u2.. depends if the ball has collided)
+        ctx.fillText(`${this.velocityVariableName} = ${this.velocity}m/s`, this.positionX, this.positionY + (this.size + 30))
     }
 
-    draw() {
+    drawBall() {
+        // Draw ball
         ctx.beginPath();
         ctx.arc(this.positionX, this.positionY, this.size, 0, Math.PI * 2);
         ctx.fillStyle = 'gray';
         ctx.fill()
         ctx.strokeStyle = 'black';
         ctx.stroke();
-        ctx.font = '8pt Calibri';
-        ctx.fillStyle = 'black';
-        ctx.textAlign = 'center';
-        // ctx.fillText('0', x, y+3);
-        ctx.fillText(`${this.mass}g`, this.positionX, this.positionY)
         ctx.closePath();
+    }
+
+    drawVector() {
+        // Draw arrow line
+        ctx.moveTo(this.positionX, this.positionY + (this.size + 10))
+        ctx.lineTo(this.positionX + (this.velocity * 10), this.positionY + (this.size + 10))
+        ctx.stroke()
+        
+        // Draw arrow head
+        var angle, x, y;
+        ctx.beginPath();
+        // Some trig and stuff... I just copied this here https://gist.github.com/jwir3/d797037d2e1bf78a9b04838d73436197
+        angle = Math.atan2(0, (this.positionX + (this.velocity * 10)) - this.positionX)
+        x = 5 * Math.cos(angle) + this.positionX + (this.velocity * 10);
+        y = 5 * Math.sin(angle) + this.positionY + (this.size + 10);
+        ctx.moveTo(x, y);
+
+        angle += (1.0/3.0) * (2 * Math.PI)
+        x = 5 * Math.cos(angle) + this.positionX + (this.velocity * 10);
+        y = 5 * Math.sin(angle) + this.positionY + (this.size + 10);
+        ctx.lineTo(x, y);
+
+        angle += (1.0/3.0) * (2 * Math.PI)
+        x = 5 *Math.cos(angle) + this.positionX + (this.velocity * 10);
+        y = 5 *Math.sin(angle) + this.positionY + (this.size + 10);
+        ctx.lineTo(x, y);
+        ctx.closePath();
+        ctx.fill();
     }
 
     update() {
@@ -79,14 +116,20 @@ const mainLoop = () => {
         // Do the maths or physics I should say, need velocity after
         ball1.velocity = ball1.velocityAfter;
         ball2.velocity = ball2.velocityAfter;
+        ball1.velocityVariableName = 'u1'
+        ball2.velocityVariableName = 'u2'
     }
 
     // Render
-    ball1.draw()
-    ball2.draw()
+    ball1.drawBall()
+    ball2.drawBall()
+    ball1.drawLabel()
+    ball2.drawLabel()
+    ball1.drawVector()
+    ball2.drawVector()
 
     // Check if animation is over
-    if (ball1.positionX + ball1.size <= 0 && ball2.positionX + ball2.size >= 800) {
+    if (ball1.positionX + ball1.size <= 0 && ball2.positionX >= 800 + ball2.size) {
         console.log("Animation has stopped")
         animationOver()
         return;
@@ -96,13 +139,18 @@ const mainLoop = () => {
 }
 
 let animationOver = () => {
-    ctx.fillStyle = 'gray';
-    ctx.fillRect(0, 0, 800, 400);
+    // ctx.fillStyle = 'gray';
+    // ctx.fillRect(0, 0, 800, 400);
     isRunning = false;
+    ctx.font = '24pt Calibri';
+    ctx.fillStyle = 'Black';
+    ctx.textAlign = 'center';
+    ctx.fillText(`Animation over`, 400, 100)
+    StartButton.disabled = false;
 }
 
 let generateBalls = (value, missingTerm) => {
-    // Start animation now
+    // Create desired ball with right values
     if (missingTerm == "mass1") {
         ball1 = new Ball(value, parseFloat(velocity1.value), parseFloat(velocityAfter1.value), 100)
         ball2 = new Ball(parseFloat(mass2.value), parseFloat(velocity2.value), parseFloat(velocityAfter2.value), 700)
@@ -132,6 +180,12 @@ let generateBalls = (value, missingTerm) => {
         ball1 = new Ball(parseFloat(mass1.value), parseFloat(velocity1.value), parseFloat(velocityAfter1.value), 100)
         ball2 = new Ball(parseFloat(mass2.value), parseFloat(velocity2.value), parseFloat(velocityAfter2.value), 700)
     }
+
+    // Assign the proper labels for the balls
+    ball1.name = "Object 1"
+    ball1.velocityVariableName = 'v1'
+    ball2.name = "Object 2"
+    ball2.velocityVariableName = 'v2'
 }
 
 let checkMissing = () => {
@@ -177,12 +231,12 @@ let Start = () => {
             missingStuffInArray[0])
         generateBalls(solved, missingStuffInArray[0]);
     }
-
 }
 
 // Start Animation once clicked
 StartButton.addEventListener("click", () => {
     // First reset everything
+    StartButton.disabled = true;
     ctx.clearRect(0, 0, 800, 400);
     if (isRunning == false) {
         Start()
